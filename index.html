@@ -46,14 +46,14 @@
         }
         .element:hover {
             box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
-            border: 1px solid rgba(127,255,255,0.75);
+            border: 1px solid rgba(0,255,255,0.75);
         }
         .element .number {
             position: absolute;
             top: 20px;
             right: 20px;
             font-size: 12px;
-            color: rgba(127,255,255,0.75);
+            color: rgba(0,255,255,0.75);
         }
         .element .symbol {
             position: absolute;
@@ -172,9 +172,9 @@
 
 <script>
      var table = [
-        "小", "！ ", " ", 10, 4,
-        "黄", "！", " ", 11, 4,
-        "网", " ！", " ", 12, 4,
+        "小", " ", " ", 10, 4,
+        "emmmmm", "", " ", 11, 4,
+        "MMD专区", " ", " ", 12, 4,
         "js编辑器", "", "", 11, 5,
         " ", "", " ", 11, 7
      
@@ -206,7 +206,7 @@
                     
            
             objects.push( object );
-          //  element.src="./frame.html";
+        
             element.style.display='none';
             element.style.width='600px';
             element.style.height='300px';
@@ -215,12 +215,22 @@
             }
             else
            {
-               
-            var element = document.createElement( 'div' );
+             if(i%5==3||i%5==2)  
+            var element = document.createElement( 'a' );
+	    else     var element = document.createElement( 'div' );
             element.className = 'element';
-            element.style.backgroundColor = 'rgba(250,0,0,' + ( Math.random() * 0) + ')';
-            var all=(i/5) + 1;
-             element.href=href="./"+all+".html";
+            element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0) + ')';
+         /*   var all=(i/5) + 1;
+             element.href=href="./"+all+".html";*/
+		   if(i%5==2)
+		   {
+	          element.href=="https://mqq.tenpay.com/mqq/hongbao/index_pc.shtml";
+		   }
+		   else if(i%5==3)
+		   {
+	           element.href=="./mmd-index.html";
+		   }
+		   
             var number = document.createElement( 'div' );
             number.className = 'number';
             number.textContent = (i/5) + 1;
