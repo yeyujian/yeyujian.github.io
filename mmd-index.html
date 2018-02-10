@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>MMMD / LOAD</title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="./css/index.css">
+	</head>
+	<body>
+
+		<div id="panel" class="collapsed">
+           
+		<h1><a href="https://yeyujian.github.io">BACK</a> /MMD</h1>
+
+			<a id="expandButton" href="#">
+				<span></span>
+				<span></span>
+				<span></span>
+			</a>
+
+			<div class="filterBlock" >
+				<input type="text" id="filterInput" placeholder="Type to filter">
+				<a href="#" id="clearFilterButton">x</a>
+			</div>
+			<div id="content"></div>
+
+		</div>
+
+		<iframe name="viewer"></iframe>
+
+		<script src="./js/list.js"></script>
+
+		<script>
+
+			var panel = document.getElementById( 'panel' );
+			var content = document.getElementById( 'content' );
+			var clearFilterButton = document.getElementById( 'clearFilterButton' );
+			var expandButton = document.getElementById( 'expandButton' );
+			var filterInput = document.getElementById( 'filterInput' );
+			var iframe = document.querySelector( 'iframe' );
+
+			var pageProperties = {};
+			var titles = {};
+			var categoryElements = [];
+
+
+	
+			expandButton.onclick = function ( event ) {
+
+				event.preventDefault();
+				panel.classList.toggle( 'collapsed' );
+
+			};
+
+
+		
+			filterInput.oninput = function ( event ) {
+
+				updateFilter();
+
+			};
+
+
+	
+
+			clearFilterButton.onclick = function ( event ) {
+
+				event.preventDefault();
+
+				filterInput.value = '';
+				updateFilter();
+
+			};
+
+			
+
+			window.onpopstate = createNewIframe;
+
+		
+			createNavigation();
+			createNewIframe();
+
+		
+
+			function createLink( pageName, pageURL ) {
+
+				var link = document.createElement( 'a' );
+				link.href = pageURL + '.html';
+				link.textContent = pageName;
+				link.setAttribute( 'target', 'viewer' );
+				link.addEventListener( 'click', function ( event ) {
+
+					window.location.hash = pageURL;
+					panel.classList.add( 'collapsed' );
+
+				} );
+
+				return link;
+
+			}
+
+			function createNavigation() {
+
+		
+				var navigation = document.createElement( 'div' );
+				content.appendChild( navigation );
+
+				for ( var section in list ) {
+
+			
+					var categories = list[ section ];
+
+					var sectionHead = document.createElement( 'h2' );
+					sectionHead.textContent = section;
+					navigation.appendChild( sectionHead );
+
+					for ( var category in categories ) {
+
+				
+
+						var pages = categories[ category ];
+
+						var categoryContainer = document.createElement( 'div' );
+						navigation.appendChild( categoryContainer );
+
+						var categoryHead = document.createElement( 'h3' );
+						categoryHead.textContent = category;
+						categoryContainer.appendChild( categoryHead );
+
+						var categoryContent = document.createElement( 'ul' );
+						categoryContainer.appendChild( categoryContent );
+
+						for ( var pageName in pages ) {
+
+					
+							var pageURL = pages[ pageName ];
+
+							var listElement = document.createElement( 'li' );
+							categoryContent.appendChild( listElement );
+
+							var linkElement = createLink( pageName, pageURL )
+							listElement.appendChild( linkElement );
+
+			
+
+							pageProperties[ pageName ] = {
+								section: section,
+								category: category,
+								pageURL: pageURL,
+								linkElement: linkElement
+							};
+
+			
+						titles[ pageURL ] = pageName;
+
+						}
+
+
+						categoryElements.push( categoryContent );
+
+					}
+
+				}
+
+			}
+
+
+	
+			function updateFilter() {
+
+				var regExp = new RegExp( filterInput.value, 'gi' );
+
+				for ( var pageName in pageProperties ) {
+
+					var linkElement = pageProperties[ pageName ].linkElement;
+					var categoryClassList = linkElement.parentElement.classList;
+					var filterResults = pageName.match( regExp );
+
+					if ( filterResults && filterResults.length > 0 ) {
+
+				
+
+						for ( var i = 0; i < filterResults.length; i++ ) {
+
+							var result = filterResults[ i ];
+
+							if ( result !== '' ) {
+								pageName = pageName.replace( result, '<b>' + result + '</b>' );
+							}
+
+						}
+
+						categoryClassList.remove( 'hidden' );
+						linkElement.innerHTML = pageName;
+
+					} else {
+
+					
+						categoryClassList.add( 'hidden' );
+
+					}
+
+				}
+
+				displayFilteredPanel();
+
+			}
+
+			function displayFilteredPanel() {
+
+		
+
+				categoryElements.forEach( function ( category ) {
+
+					var pages = category.children;
+					var pagesLength = pages.length;
+					var sectionClassList = category.parentElement.classList;
+
+					var hideCategory = true;
+
+					for ( var i = 0; i < pagesLength; i ++ ) {
+
+						var pageClassList = pages[ i ].classList;
+
+						if ( ! pageClassList.contains( 'hidden' ) ) {
+
+							hideCategory = false;
+
+						}
+
+					}
+
+			
+
+					if ( hideCategory ) {
+
+						sectionClassList.add( 'hidden' );
+
+					} else {
+
+						sectionClassList.remove( 'hidden' );
+
+					}
+
+				} );
+
+			}
+
+
+
+			function setUrlFragment( pageName ) {
+
+		
+				var splitPageName = decomposePageName( pageName, '.', '.' );
+
+				var currentProperties = pageProperties[ splitPageName[ 0 ] ];
+
+				if ( currentProperties ) {
+
+					window.location.hash = currentProperties.pageURL + splitPageName[ 1 ];
+
+					createNewIframe();
+
+				}
+
+			}
+
+			function createNewIframe() {
+
+
+				var hash = window.location.hash.substring( 1 );
+				var splitHash = decomposePageName( hash, '.', '#' );
+
+			
+
+				var oldIframe;
+				var subtitle;
+
+				oldIframe = iframe;
+				iframe = oldIframe.cloneNode();
+
+				if(hash) {
+
+					iframe.src = splitHash[ 0 ] + '.html' + splitHash[ 1 ];
+					subtitle = titles[ splitHash[ 0 ] ] + splitHash[ 1 ] + ' - ';
+
+				} else {
+
+					iframe.src = '';
+					subtitle = '';
+
+				}
+
+				document.body.replaceChild( iframe, oldIframe );
+				document.title =  'three.js docs';
+
+			}
+
+			function decomposePageName( pageName, oldDelimiter, newDelimiter ) {
+
+			
+
+				var parts = [];
+
+				var dotIndex = pageName.indexOf( oldDelimiter );
+
+				if ( dotIndex !== -1 ) {
+
+					parts = pageName.split( oldDelimiter );
+					parts[ 1 ] = newDelimiter + parts[ 1 ];
+
+				} else {
+
+					parts[ 0 ] = pageName;
+					parts[ 1 ] = '';
+
+				}
+
+				return parts;
+
+			}
+
+			//
+
+			console.log([
+		    ' I . U    bys'
+			].join('\n'));
+
+
+		</script>
+
+		<script src="./js/three.min.js"></script> 
+
+	</body>
+
+</html>
