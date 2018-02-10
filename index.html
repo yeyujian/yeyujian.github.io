@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>yyj blog<带给你不一样的体验></title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            background-color: #000000;
+            margin: 0;
+            font-family: Helvetica, sans-serif;;
+            overflow: hidden;
+        }
+        a {
+            color: #ffffff;
+        }
+        #info {
+            position: absolute;
+            width: 100%;
+            color: #ffffff;
+            padding: 5px;
+            font-family: Monospace;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1;
+        }
+        #menu {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .element {
+            width: 120px;
+            height: 160px;
+          /*  box-shadow: 0px 0px 12px rgba(250,25,25,0.5);*/
+          box-shadow: 0px 0px 5px rgba(222, 11, 70, 0.77);
+            border: 1px solid rgba(222, 11, 70, 0.77);
+            text-align: center;
+            cursor: default;
+        }
+        .element:hover {
+            box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+            border: 1px solid rgba(127,255,255,0.75);
+        }
+        .element .number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 12px;
+            color: rgba(127,255,255,0.75);
+        }
+        .element .symbol {
+            position: absolute;
+            top: 40px;
+            left: 0px;
+            right: 0px;
+            font-size: 60px;
+            font-weight: bold;
+            color: rgba(255,255,255,0.75);
+            /*text-shadow: 0 0 10px rgba(0,255,255,0.95);*/
+        }
+        .element .sy {
+            position: absolute;
+            top: 40px;
+            left: 0px;
+            right: 0px;
+            font-size: 10px;
+            font-weight: bold;
+            color: rgba(255,255,255,0.4);
+            text-shadow: 0 7px 10px rgba(0,255,0,1);
+        }
+          #iframe1
+     {     width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.3);
+     overflow: hidden;
+     }
+      #text1
+       {
+    	width: 300px;
+    	height: 400px;
+    	  background-color: rgba(0,127,127,0.1);
+    	 color: rgba(255,255,255,0.7);
+         text-shadow: 0 0 10px rgba(0,255,255,0.5);
+       }
+        .element .details {
+            position: absolute;
+            bottom: 15px;
+            left: 0px;
+            right: 0px;
+            font-size: 12px;
+            color: rgba(250,250,250,0.75);
+        }
+        button {
+            color: rgba(127,255,255,0.75);
+            background: transparent;
+            outline: 1px solid rgba(127,255,255,0.75);
+            border: 0px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: rgba(0,255,255,0.5);
+        }
+        button:active {
+            color: #000000;
+            background-color: rgba(0,255,255,0.75);
+        }
+           }
+        #cube
+        {
+        width: 120px;
+         height: 120px;
+    /*    -webkit-perspective:45;*/
+         -webkit-transform-style: -webkit-preserve-3d;
+     /*    left: 45%;*/
+        
+    /*     
+       position: relative;*/
+        }
+        .element1 
+        {   -webkit-transform-style: -webkit-preserve-3d;
+            width: 120px;
+            height: 120px;
+            box-shadow: 0px 0px 12px rgba(250,25,25,0.5);
+            position: absolute;
+            border: 1px solid rgba(222, 11, 70, 0.7);
+            text-align: center;
+             font-size: 60px;
+            font-weight: bold;
+            color: rgba(255,255,255,0.75);
+        }
+        .element1:hover
+        {
+         color: #000000;
+        background-color: rgba(0,255,255,0.75);   
+        }
+ 
+    </style>
+</head>
+<body>
+<script src="./js/three.min.js"></script>
+<script src="./js/tween.min.js"></script>
+<script src="./js/TrackballControls.js"></script>
+<script src="./js/CSS3DRenderer.js"></script>
+<div id='cube'>
+     <div class="element1" id='cube1'>1</div>
+     <div class="element1" id='cube2'>2</div>
+     <div class="element1" id='cube3'>3</div>
+     <div class="element1" id='cube4'>4</div>
+     <div class="element1" id='cube5'>5</div>
+     <div class="element1" id='cube6'>6</div>
+    </div>
+
+
+
+<div id="container"></div>
+
+<div id="menu">
+    <button onclick='run()' id='run'>RUN</button>
+    <button id="table">TABLE</button>
+    <button id="sphere">SPHERE</button>
+    <button id="helix">HELIX</button>
+    <button id="grid">GRID</button>
+    <button id="bt1">OPEN</button>
+</div>
+
+<script>
+     var table = [
+        "小", "！ ", " ", 10, 4,
+        "黄", "！", " ", 11, 4,
+        "网", " ！", " ", 12, 4,
+        "js编辑器", "", "", 11, 5,
+        " ", "", " ", 11, 7
+     
+    ];
+    var camera, scene, renderer;
+    var controls;
+    var objects = [];
+    var targets = { table: [], sphere: [], helix: [], grid: [] };
+    init();
+    animate();
+    function init() {
+        camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.position.z = 1500;
+        scene = new THREE.Scene();
+        // table
+        for ( var i = 0; i < table.length; i += 5 ) {
+            if(i/5==4)
+            {
+           	
+            var element = document.createElement('iframe');
+            element.className = 'element';
+         
+             element.id='iframe1';
+            var object = new THREE.CSS3DObject( element );
+            object.position.x = Math.random() * 4000 - 2000;
+            object.position.y = Math.random() * 4000 - 2000;
+            object.position.z = Math.random() * 4000 - 2000;
+            scene.add( object );
+                    
+           
+            objects.push( object );
+          //  element.src="./frame.html";
+            element.style.display='none';
+            element.style.width='600px';
+            element.style.height='300px';
+           
+          
+            }
+            else
+           {
+               
+            var element = document.createElement( 'div' );
+            element.className = 'element';
+            element.style.backgroundColor = 'rgba(250,0,0,' + ( Math.random() * 0) + ')';
+            var all=(i/5) + 1;
+             element.href=href="./"+all+".html";
+            var number = document.createElement( 'div' );
+            number.className = 'number';
+            number.textContent = (i/5) + 1;
+            element.appendChild( number );
+            var symbol = document.createElement( 'div' );
+            if(i/5!=3)
+            symbol.className = 'symbol';
+            else symbol.className='sy';
+            symbol.textContent =table[ i ];
+            element.appendChild( symbol );
+            var details = document.createElement( 'div' );
+            details.className = 'details';
+            details.innerHTML = table[ i + 1 ] + '<br>' + table[ i + 2 ];
+            element.appendChild( details );
+            var object = new THREE.CSS3DObject( element );
+            object.position.x = Math.random() * 4000 - 2000;
+            object.position.y = Math.random() * 4000 - 2000;
+            object.position.z = Math.random() * 4000 - 2000;
+            scene.add( object );
+            objects.push( object );
+            //
+            if(i/5==3)
+            {
+            element.id='editor';
+           element.innerHTML="<textarea id='text1' autofocus></textarea>";
+          element.style.display='none';
+          element.style.overflow='hidden';
+          element.style.width='304px';
+          element.onclick=function()
+          {
+          	document.getElementById('text1').focus();
+          }
+         
+           }//if
+           }
+            var object = new THREE.Object3D();
+            object.position.x = ( table[ i + 3 ] * 140 ) - 1550;//1330;
+            object.position.y = - ( table[ i + 4 ] * 180 ) + 1000;//990;
+         
+            targets.table.push( object );
+        }
+          var movz=-320;
+        var e2=document.getElementById('cube1');
+           var object1 = new THREE.CSS3DObject(e2);
+            object1.position.x = ( 11 * 140 ) - 1550;
+            object1.position.y = -( 6* 180 ) + 1000;
+            object1.position.z = 120+movz;
+            
+            scene.add( object1 ); 
+        var e2=document.getElementById('cube2');
+           var object1 = new THREE.CSS3DObject(e2);
+            object1.position.x = ( 11 * 140 ) - 1550;
+            object1.position.y = -( 6* 180 ) + 1000;
+            object1.position.z = 0+movz;
+            object1.rotation.y=Math.PI;
+            
+            scene.add( object1 ); 
+            var e2=document.getElementById('cube3');
+           var object1 = new THREE.CSS3DObject(e2);
+            object1.position.x = ( 11 * 140 ) - 1550+60;
+            object1.position.y = -( 6* 180 ) + 1000;
+            object1.position.z = 60+movz;
+            object1.rotation.y=Math.PI/2;
+            scene.add( object1 ); 
+           
+            var e2=document.getElementById('cube4');
+           var object1 = new THREE.CSS3DObject(e2);
+            object1.position.x = ( 11 * 140 ) - 1550-60;
+            object1.position.y = -( 6* 180 ) + 1000;
+            object1.position.z = 60+movz;
+           object1.rotation.y=-Math.PI/2;
+            scene.add( object1 ); 
+           
+           var e2=document.getElementById('cube5');
+           var object1 = new THREE.CSS3DObject(e2);
+            object1.position.x = ( 11 * 140 ) - 1550;
+            object1.position.y = -( 6* 180 ) + 1000+60;
+            object1.position.z = 60+movz;
+            object1.rotation.x=-Math.PI/4*2;
+          
+            scene.add( object1 ); 
+            var e2=document.getElementById('cube6');
+           var object1 = new THREE.CSS3DObject(e2);
+            object1.position.x = ( 11 * 140 ) - 1550;
+            object1.position.y = -( 6* 180 ) + 1000-60;
+            object1.position.z = 60+movz;
+            //object1.rotation.y=Math.PI/2;
+           // object1.rotation.z=-Math.PI/2;
+            object1.rotation.x=Math.PI/4*2;
+            scene.add( object1 ); 
+            
+        // sphere
+        var vector = new THREE.Vector3();
+        for ( var i = 0, l = objects.length; i < l; i ++ ) {
+            var phi = Math.acos( -1 + ( 2 * i ) / l );
+            var theta = Math.sqrt( l * Math.PI ) * phi;
+            var object = new THREE.Object3D();
+            object.position.x = 800 * Math.cos( theta ) * Math.sin( phi );
+            object.position.y = 800 * Math.sin( theta ) * Math.sin( phi );
+            object.position.z = 800 * Math.cos( phi );
+            vector.copy( object.position ).multiplyScalar( 2 );
+            object.lookAt( vector );
+            targets.sphere.push( object );
+        }
+        // helix
+        var vector = new THREE.Vector3();
+        for ( var i = 0, l = objects.length; i < l; i ++ ) {
+            var phi = i * 0.175 + Math.PI;
+            var object = new THREE.Object3D();
+            object.position.x = 900 * Math.sin( phi );
+            object.position.y = - ( i * 8 ) + 450;
+            object.position.z = 900 * Math.cos( phi );
+            vector.x = object.position.x * 2;
+            vector.y = object.position.y;
+            vector.z = object.position.z * 2;
+            object.lookAt( vector );
+            targets.helix.push( object );
+        }
+        // grid
+        for ( var i = 0; i < objects.length; i ++ ) {
+            var object = new THREE.Object3D();
+            object.position.x = ( ( i % 5 ) * 400 ) - 800;
+            object.position.y = ( - ( Math.floor( i / 5 ) % 5 ) * 400 ) + 800;
+            object.position.z = ( Math.floor( i / 25 ) ) * 1000 - 2000;
+            targets.grid.push( object );
+        }
+        //
+        renderer = new THREE.CSS3DRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.domElement.style.position = 'absolute';
+        document.getElementById( 'container' ).appendChild( renderer.domElement );
+        //
+        controls = new THREE.TrackballControls( camera, renderer.domElement );
+        controls.rotateSpeed = 0.5;
+        controls.minDistance = 500;
+        controls.maxDistance = 6000;
+        controls.addEventListener( 'change', render );
+        //////////////////////////////////////
+//////////////////////////
+        var button = document.getElementById( 'bt1' );
+        button.addEventListener( 'click', function ( event ) {
+            var ed=document.getElementById('editor');
+		    var bt=document.getElementById('bt1');
+		bt.value="CLOSE";
+		if(ed.style.display=='none') 
+		{
+			ed.style.display='block';
+		
+		document.getElementById('iframe1').style.display='block';
+        
+		 //document.getElementById('iframe1').contentWindow.document.body.contentEditable= "true";
+			bt.value="CLOSE";
+		}
+		else 
+		{
+			ed.style.display='none';
+            //document.getElementById('frame1').style.disabled=true;
+          document.getElementById('iframe1').style.display='none';
+			bt.value="OPEN";
+            document.getElementById('run').disable;
+		}
+        }, false );
+        ///////////////////////
+         var button = document.getElementById( 'table' );
+        button.addEventListener( 'click', function ( event ) {
+            transform( targets.table, 2000 );
+        }, false );
+        var button = document.getElementById( 'sphere' );
+        button.addEventListener( 'click', function ( event ) {
+            transform( targets.sphere, 2000 );
+        }, false );
+        var button = document.getElementById( 'helix' );
+        button.addEventListener( 'click', function ( event ) {
+            transform( targets.helix, 2000 );
+        }, false );
+        var button = document.getElementById( 'grid' );
+        button.addEventListener( 'click', function ( event ) {
+            transform( targets.grid, 2000 );
+        }, false );
+        transform( targets.table, 1000 );
+        //
+        window.addEventListener( 'resize', onWindowResize, false );
+    }
+       function run()
+       {
+     
+       	 {
+             var text = document.getElementById('text1').value; 
+             iframe = document.getElementById('iframe1'); 
+  
+           // document.getElementById('text1').value="";
+           // 先清空iframe  
+        iframe.contentWindow.document.body.innerHTML=text;  
+         // "<script>"+text+"</"+"script>"
+                //将输入框内的数据传给iframe  
+             //iframe.contentDocument.write(text);  
+               }  
+    
+        
+        
+       }
+    function transform( targets, duration ) {
+        TWEEN.removeAll();
+        for ( var i = 0; i < objects.length; i ++ ) {
+            var object = objects[ i ];
+            var target = targets[ i ];
+            new TWEEN.Tween( object.position )
+                    .to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+                    .easing( TWEEN.Easing.Exponential.InOut )
+                    .start();
+            new TWEEN.Tween( object.rotation )
+                    .to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+                    .easing( TWEEN.Easing.Exponential.InOut )
+                    .start();
+        }
+        new TWEEN.Tween( this )
+                .to( {}, duration * 2 )
+                .onUpdate( render )
+                .start();
+    }
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        render();
+    }
+    function animate() {
+        requestAnimationFrame( animate );
+        TWEEN.update();
+        controls.update();
+    }
+    function render() {
+        renderer.render( scene, camera );
+    }
+</script>
+</body>
+</html>
