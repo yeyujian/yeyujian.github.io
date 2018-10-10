@@ -171,7 +171,7 @@ catch(err)
 }
 }
 RBTree.prototype.insert=function(node)
-{
+{	TWEEN.removeAll();
 	if(this.root==null)
 	{
 		this.root=node;
