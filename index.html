@@ -437,19 +437,22 @@
     }
        function run()
        {
-     
-       	 {
-             var text = document.getElementById('text1').value; 
-             iframe = document.getElementById('iframe1'); 
-  
-           // document.getElementById('text1').value="";
-           // 先清空iframe  
-        iframe.contentWindow.document.body.innerHTML=text;  
-         // "<script>"+text+"</"+"script>"
+
+                var text = document.getElementById('text1').value;
+                ifr = document.getElementById('iframe1');
+
+                // document.getElementById('text1').value="";
+                // 先清空iframe  
+
+                //iframe.contentWindow.document.body.innerHTML=text; 
+
+                // "<script>"+text+"</"+"script>"
                 //将输入框内的数据传给iframe  
-             //iframe.contentDocument.write(text);  
-               }  
-    
+                //iframe.contentDocument.write(text);  
+                var ifrw = (ifr.contentWindow) ? ifr.contentWindow : (ifr.contentDocument.document) ? ifr.contentDocument.document : ifr.contentDocument;
+                ifrw.document.open();
+                ifrw.document.write(text);
+                ifrw.document.close();    
         
         
        }
